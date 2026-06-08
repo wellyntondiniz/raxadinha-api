@@ -22,7 +22,7 @@ public class EventoRestController {
 		return eventoService.getEventos();
 	}
 	
-	@PutMapping("{id")
+	@PutMapping("/{id}")
 	public Evento deletar(Integer id) {
 		return eventoService.deletar(id);
 	}
