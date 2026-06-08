@@ -1,6 +1,7 @@
 package com.raxadinha.evento;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,10 +31,10 @@ public class Evento {
 	private String descricao;
 	
 	@Column(name = "data_inicio")
-	private LocalDate data_inicio;
-	
+	private LocalDateTime dataInicio;
+
 	@Column(name = "data_termino")
-	private LocalDate data_termino;
+	private LocalDateTime dataTermino;
 	
 	public Integer getId() {
 		return id;
@@ -75,19 +76,19 @@ public class Evento {
 		this.descricao = descricao;
 	}
 	
-	public LocalDate getDataInicio() {
-		return data_inicio;
+	public LocalDateTime getDataInicio() {
+		return dataInicio;
 	}
 	
-	public void setDataInicio(LocalDate data_inicio) {
-		this.data_inicio = data_inicio;
+	public void setDataInicio(LocalDateTime dataInicio) {
+		this.dataInicio = dataInicio;
 	}
 	
-	public LocalDate getDataTermino() {
-		return data_termino;
+	public LocalDateTime getDataTermino() {
+		return dataTermino;
 	}
 	
-	public void setDataTermino(LocalDate data_termino) {
-		this.data_termino = data_termino;
+	public void setDataTermino(LocalDateTime dataTermino) {
+		this.dataTermino = dataTermino;
 	}
 }
