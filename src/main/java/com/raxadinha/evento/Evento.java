@@ -51,14 +51,6 @@ public class Evento {
 		this.nome = nome;
 	}
 	
-	public Integer getGrupoId() {
-		return grupoId;
-	}
-	
-	public void setGrupoId(Integer grupoId) {
-		this.grupoId = grupoId;
-	}
-	
 	public Boolean getAtivo() {
 		return ativo;
 	}
