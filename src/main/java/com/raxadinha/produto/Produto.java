@@ -2,20 +2,57 @@ package com.raxadinha.produto;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "produtos")
+@Table(name = "produto")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Produto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
+    @Column(name = "descricao", nullable = false)
+    private String descricao;
 
+    @Column(name = "unidade_de_medida", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UnidadeDeMedida unidadeDeMedida;
+
+    @Column(name = "quantidade", nullable = false)
+    private Double quantidade;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	public UnidadeDeMedida getUnidadeDeMedida() {
+		return unidadeDeMedida;
+	}
+
+	public void setUnidadeDeMedida(UnidadeDeMedida unidadeDeMedida) {
+		this.unidadeDeMedida = unidadeDeMedida;
+	}
+
+	public Double getQuantidade() {
+		return quantidade;
+	}
+
+	public void setQuantidade(Double quantidade) {
+		this.quantidade = quantidade;
+	}
+    
+    
 }
