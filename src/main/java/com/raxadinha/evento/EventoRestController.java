@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.raxadinha.produto.Produto;
-
 @RestController
 @RequestMapping(value="/eventos")
 @CrossOrigin
@@ -28,8 +26,8 @@ public class EventoRestController {
 		return eventoService.getEventos();
 	}
 	
-	@PutMapping("/{id}")
-	public Evento deletar(Integer id) {
+	@PutMapping("/{id}/desativar")
+	public Evento deletar(@PathVariable Integer id) {
 		return eventoService.deletar(id);
 	}
 	@GetMapping("/{id}")
@@ -37,9 +35,9 @@ public class EventoRestController {
 		return eventoService.getEventoById(id);
 	}
 	
-	@PutMapping("/{id}/desativar")
-	public Evento desativar(@PathVariable Integer id) {
-	    return eventoService.deletar(id);
+	@GetMapping("/quantidade-ativos")
+	public Long getQuantidade() {
+		return eventoService.getQuantidadeAtivos();
 	}
 	
 	@PostMapping

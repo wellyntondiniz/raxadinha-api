@@ -10,4 +10,6 @@ public interface EventoRepository extends JpaRepository<Evento, Integer>{
 	
 	public List<Evento> findAllByAtivo(Boolean ativo);
 	
+	long countByAtivo(boolean ativo);
+	
 }

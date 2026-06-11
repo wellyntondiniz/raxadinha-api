@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.raxadinha.produto.Produto;
-
 @Service
 public class EventoService {
 	
@@ -32,6 +30,10 @@ public class EventoService {
 	
 	public List<Evento> getEventos() {
 		return eventoRepository.findAllByAtivo(true);
+	}
+	
+	public Long getQuantidadeAtivos() {
+	    return eventoRepository.countByAtivo(true);
 	}
 	
 	public Evento getEventoById(Integer id) {
