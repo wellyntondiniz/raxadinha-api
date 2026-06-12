@@ -34,6 +34,7 @@ public class Evento {
 
 	@Column(name = "data_termino")
 	private LocalDateTime dataTermino;
+
 	
 	public Integer getId() {
 		return id;

@@ -12,4 +12,6 @@ public interface EventoRepository extends JpaRepository<Evento, Integer>{
 	
 	long countByAtivo(boolean ativo);
 	
+	java.util.Optional<Evento> findFirstByNome(String nome);
+	
 }
