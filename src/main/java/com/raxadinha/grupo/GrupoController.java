@@ -142,7 +142,16 @@ public class GrupoController {
         throw new RuntimeException("Grupo ou Usuário não encontrado");
     }
 
+<<<<<<< Updated upstream
     // Endpoint antigo para vincular um evento existente a este grupo pelo NOME
+=======
+}
+
+    @Autowired
+    private com.raxadinha.evento.EventoRepository eventoRepository;
+
+    // Endpoint para vincular um evento existente a este grupo pelo NOME
+>>>>>>> Stashed changes
     @PutMapping("/{grupoId}/eventos/nome/{eventoNome}")
     public Grupo vincularEventoExistentePorNome(@PathVariable Long grupoId, @PathVariable String eventoNome) {
         Optional<Grupo> grupoOpt = grupoRepository.findById(grupoId);
@@ -159,4 +168,33 @@ public class GrupoController {
         }
         throw new RuntimeException("Grupo ou Evento não encontrado");
     }
+
+    @PutMapping("/{id}")
+    public Grupo atualizar(
+            @PathVariable Long id,
+            @RequestBody Grupo grupo) {
+
+        Grupo existente =
+            grupoRepository.findById(id)
+            .orElseThrow();
+
+        existente.setNome(grupo.getNome());
+
+        existente.setDescricao(
+            grupo.getDescricao()
+        );
+
+        return grupoRepository.save(
+            existente
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public void excluir(
+            @PathVariable Long id
+    ) {
+
+
+        grupoRepository.deleteById(id);
+
 }
