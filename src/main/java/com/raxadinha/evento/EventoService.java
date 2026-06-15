@@ -59,6 +59,7 @@ public class EventoService {
         evento.setDescricao(dados.getDescricao());
         evento.setDataInicio(dados.getDataInicio());
         evento.setDataTermino(dados.getDataTermino());
+        evento.setGrupoId(dados.getGrupoId());
         return eventoRepository.save(evento);
 	}
 	

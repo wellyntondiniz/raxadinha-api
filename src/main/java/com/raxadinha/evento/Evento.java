@@ -83,4 +83,12 @@ public class Evento {
 	public void setDataTermino(LocalDateTime dataTermino) {
 		this.dataTermino = dataTermino;
 	}
+//so pq precisei 
+	public Integer getGrupoId() {
+		return grupoId;
+	}
+
+	public void setGrupoId(Integer grupoId) {
+		this.grupoId = grupoId;
+	}
 }
