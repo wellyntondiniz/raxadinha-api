@@ -2,6 +2,7 @@ package com.raxadinha.usuario;
 
 import com.raxadinha.usuario.exception.CredenciaisInvalidasException;
 import com.raxadinha.usuario.exception.EmailJaCadastradoException;
+import com.raxadinha.usuario.exception.NomeJaCadastradoException;
 import com.raxadinha.usuario.exception.RecursoNaoEncontradoException;
 import com.raxadinha.usuario.exception.RegraNegocioException;
 import com.raxadinha.usuario.dto.UsuarioResponse;
@@ -22,16 +23,20 @@ public class UsuarioService {
     }
 
     public List<Usuario> listar() {
-        return repository.findAll();
+        return repository.findByAtivoTrue();
     }
 
     public Usuario buscarPorId(Long id) {
-        return repository.findById(id)
+        return repository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado: " + id));
     }
 
 
     public Usuario salvar(Usuario usuario) {
+
+        // Normaliza entrada (remove espaços nas pontas)
+        if (usuario.getNome() != null) usuario.setNome(usuario.getNome().trim());
+        if (usuario.getEmail() != null) usuario.setEmail(usuario.getEmail().trim());
 
         if (vazio(usuario.getNome()) || vazio(usuario.getEmail()) || vazio(usuario.getSenha())) {
             throw new RegraNegocioException("Nome, e-mail e senha são obrigatórios");
@@ -44,12 +49,17 @@ public class UsuarioService {
         if (repository.existsByEmail(usuario.getEmail())) {
             throw new EmailJaCadastradoException("Já existe um usuário com este e-mail");
         }
+
+        // RN: nome de usuário deve ser único (não permitir duplicidade)
+        if (repository.existsByNomeIgnoreCase(usuario.getNome())) {
+            throw new NomeJaCadastradoException("Este nome de usuário já está em uso");
+        }
         return repository.save(usuario);
     }
 
 
     public LoginResposta login(String email, String senha) {
-        Usuario usuario = repository.findByEmail(email)
+        Usuario usuario = repository.findByEmailAndAtivoTrue(email)
                 .orElseThrow(() -> new CredenciaisInvalidasException("E-mail ou senha inválidos"));
         if (!usuario.getSenha().equals(senha)) {
             throw new CredenciaisInvalidasException("E-mail ou senha inválidos");
@@ -61,6 +71,10 @@ public class UsuarioService {
     public Usuario atualizar(Long id, Usuario dados) {
         Usuario existente = buscarPorId(id);
 
+        // Normaliza entrada (remove espaços nas pontas)
+        if (dados.getNome() != null) dados.setNome(dados.getNome().trim());
+        if (dados.getEmail() != null) dados.setEmail(dados.getEmail().trim());
+
         if (vazio(dados.getNome()) || vazio(dados.getEmail())) {
             throw new RegraNegocioException("Nome e e-mail são obrigatórios");
         }
@@ -69,6 +83,12 @@ public class UsuarioService {
         if (!existente.getEmail().equals(dados.getEmail())
                 && repository.existsByEmail(dados.getEmail())) {
             throw new EmailJaCadastradoException("Já existe um usuário com este e-mail");
+        }
+
+        // RN: nome de usuário deve permanecer único ao editar
+        if (!existente.getNome().equalsIgnoreCase(dados.getNome())
+                && repository.existsByNomeIgnoreCase(dados.getNome())) {
+            throw new NomeJaCadastradoException("Este nome de usuário já está em uso");
         }
 
         existente.setNome(dados.getNome());
@@ -85,11 +105,21 @@ public class UsuarioService {
     }
 
 
-    public void excluir(Long id) {
-        if (!repository.existsById(id)) {
-            throw new RecursoNaoEncontradoException("Usuário não encontrado: " + id);
+    // Verifica em tempo real se um nome de usuário está disponível
+    public boolean nomeDisponivel(String nome) {
+        if (vazio(nome)) {
+            return false;
         }
-        repository.deleteById(id);
+        return !repository.existsByNomeIgnoreCase(nome.trim());
+    }
+
+
+    public void excluir(Long id) {
+        // Exclusão lógica (soft delete): mantém o registro, apenas marca como inativo
+        Usuario usuario = repository.findByIdAndAtivoTrue(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado: " + id));
+        usuario.setAtivo(false);
+        repository.save(usuario);
     }
 
     private boolean vazio(String valor) {

@@ -34,6 +34,12 @@ public class UsuarioController {
         return UsuarioResponse.de(service.buscarPorId(id));
     }
 
+    // Verifica disponibilidade do nome de usuário (usado pela tela de cadastro)
+    @GetMapping("/nome-disponivel")
+    public java.util.Map<String, Boolean> nomeDisponivel(@RequestParam String nome) {
+        return java.util.Map.of("disponivel", service.nomeDisponivel(nome));
+    }
+
     // RF01 - Cadastro
     @PostMapping
     public ResponseEntity<UsuarioResponse> cadastrar(@Valid @RequestBody CadastroRequest req) {

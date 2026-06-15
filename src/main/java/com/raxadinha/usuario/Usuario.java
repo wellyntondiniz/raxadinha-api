@@ -14,7 +14,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nome", nullable = false)
+    @Column(name = "nome", nullable = false, unique = true)
     private String nome;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -23,6 +23,19 @@ public class Usuario {
     @Column(name = "senha", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
+
+    // Soft delete: conta inativa não aparece em listagens nem faz login,
+    // mas o registro é mantido no banco (exclusão lógica - UC04).
+    @Column(name = "ativo", nullable = false, columnDefinition = "boolean default true")
+    private boolean ativo = true;
+
+	public boolean isAtivo() {
+		return ativo;
+	}
+
+	public void setAtivo(boolean ativo) {
+		this.ativo = ativo;
+	}
 
 	public Long getId() {
 		return id;
