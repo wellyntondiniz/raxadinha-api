@@ -59,18 +59,21 @@ public class UsuarioController {
 
     // RF03 - Editar
     @PutMapping("/{id}")
-    public UsuarioResponse atualizar(@PathVariable Long id, @Valid @RequestBody AtualizarRequest req) {
+    public UsuarioResponse atualizar(@PathVariable Long id,
+                                     @RequestHeader(value = "X-Usuario-Id", required = false) Long solicitanteId,
+                                     @Valid @RequestBody AtualizarRequest req) {
         Usuario dados = new Usuario();
         dados.setNome(req.nome());
         dados.setEmail(req.email());
         dados.setSenha(req.senha());
-        return UsuarioResponse.de(service.atualizar(id, dados));
+        return UsuarioResponse.de(service.atualizar(id, dados, solicitanteId));
     }
 
     // RF04 - Excluir
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        service.excluir(id);
+    public ResponseEntity<Void> excluir(@PathVariable Long id,
+                                        @RequestHeader(value = "X-Usuario-Id", required = false) Long solicitanteId) {
+        service.excluir(id, solicitanteId);
         return ResponseEntity.noContent().build();
     }
 }

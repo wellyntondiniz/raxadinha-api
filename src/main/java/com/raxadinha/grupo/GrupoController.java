@@ -14,7 +14,6 @@ import com.raxadinha.usuario.dto.UsuarioResponse;
 
 import jakarta.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping({"/grupos", "/groups"})
-@CrossOrigin(origins = "*") // Permite chamadas do Expo Snack/Mobile
+@CrossOrigin(origins = "*")
 public class GrupoController {
 
     private final GrupoService grupoService;
@@ -53,7 +52,10 @@ public class GrupoController {
 
     // 2. Editar grupo
     @PutMapping("/{id}")
-    public ResponseEntity<GrupoResponse> editarGrupo(@PathVariable Long id, @Valid @RequestBody GrupoRequest req) {
+    public ResponseEntity<GrupoResponse> editarGrupo(
+            @PathVariable Long id,
+            @Valid @RequestBody GrupoRequest req) {
+
         GrupoResponse res = grupoService.editarGrupo(id, req);
         return ResponseEntity.ok(res);
     }
@@ -76,22 +78,27 @@ public class GrupoController {
     @GetMapping("/users/search")
     public ResponseEntity<List<UsuarioResponse>> buscarUsuariosParaAdicionar(
             @RequestParam(value = "query", required = false) String query) {
+
         List<UsuarioResponse> res = grupoService.buscarUsuariosParaAdicionar(query);
         return ResponseEntity.ok(res);
     }
 
-    // 6. Remover usuário de um grupo
+    // 6. Remover usuário do grupo
     @DeleteMapping("/{groupId}/users/{userId}")
-    public ResponseEntity<Void> removerUsuarioDoGrupo(@PathVariable Long groupId, @PathVariable Long userId) {
+    public ResponseEntity<Void> removerUsuarioDoGrupo(
+            @PathVariable Long groupId,
+            @PathVariable Long userId) {
+
         grupoService.removerUsuarioDoGrupo(groupId, userId);
         return ResponseEntity.noContent().build();
     }
 
-    // 7. Adicionar usuário em um grupo
+    // 7. Adicionar usuário ao grupo
     @PostMapping("/{groupId}/users")
     public ResponseEntity<GrupoResponse> adicionarUsuarioAoGrupo(
             @PathVariable Long groupId,
             @Valid @RequestBody AdicionarUsuarioRequest req) {
+
         GrupoResponse res = grupoService.adicionarUsuarioAoGrupo(groupId, req.userId());
         return ResponseEntity.ok(res);
     }
@@ -103,98 +110,72 @@ public class GrupoController {
         return ResponseEntity.noContent().build();
     }
 
-    // 9. Listar mensagens do chat do grupo
+    // 9. Listar mensagens
     @GetMapping("/{groupId}/messages")
-    public ResponseEntity<List<MensagemResponse>> listarMensagens(@PathVariable Long groupId) {
+    public ResponseEntity<List<MensagemResponse>> listarMensagens(
+            @PathVariable Long groupId) {
+
         List<MensagemResponse> res = grupoService.listarMensagens(groupId);
         return ResponseEntity.ok(res);
     }
 
-    // 10. Enviar mensagem no chat do grupo
+    // 10. Enviar mensagem
     @PostMapping("/{groupId}/messages")
     public ResponseEntity<MensagemResponse> enviarMensagem(
             @PathVariable Long groupId,
             @Valid @RequestBody MensagemRequest req) {
+
         MensagemResponse res = grupoService.enviarMensagem(groupId, req);
         return ResponseEntity.ok(res);
     }
 
-
-    // Endpoint antigo para adicionar um usuário existente ao grupo pelo NOME
+    // Endpoint legado para adicionar usuário por nome
     @PostMapping("/{grupoId}/usuarios/nome/{usuarioNome}")
-    public Grupo adicionarUsuarioAoGrupoPorNome(@PathVariable Long grupoId, @PathVariable String usuarioNome) {
+    public Grupo adicionarUsuarioAoGrupoPorNome(
+            @PathVariable Long grupoId,
+            @PathVariable String usuarioNome) {
+
         Optional<Grupo> grupoOpt = grupoRepository.findById(grupoId);
         Optional<Usuario> usuarioOpt = usuarioRepository.findFirstByNome(usuarioNome);
 
         if (grupoOpt.isPresent() && usuarioOpt.isPresent()) {
             Grupo grupo = grupoOpt.get();
             Usuario usuario = usuarioOpt.get();
-            
+
             if (grupo.getUsuarios() == null) {
                 grupo.setUsuarios(new ArrayList<>());
             }
+
             if (!grupo.getUsuarios().contains(usuario)) {
                 grupo.getUsuarios().add(usuario);
                 return grupoRepository.save(grupo);
             }
-            return grupo; // Já estava no grupo
+
+            return grupo;
         }
+
         throw new RuntimeException("Grupo ou Usuário não encontrado");
     }
 
-<<<<<<< Updated upstream
-    // Endpoint antigo para vincular um evento existente a este grupo pelo NOME
-=======
-}
-
-    @Autowired
-    private com.raxadinha.evento.EventoRepository eventoRepository;
-
-    // Endpoint para vincular um evento existente a este grupo pelo NOME
->>>>>>> Stashed changes
+    // Endpoint legado para vincular evento por nome
     @PutMapping("/{grupoId}/eventos/nome/{eventoNome}")
-    public Grupo vincularEventoExistentePorNome(@PathVariable Long grupoId, @PathVariable String eventoNome) {
+    public Grupo vincularEventoExistentePorNome(
+            @PathVariable Long grupoId,
+            @PathVariable String eventoNome) {
+
         Optional<Grupo> grupoOpt = grupoRepository.findById(grupoId);
         Optional<Evento> eventoOpt = eventoRepository.findFirstByNome(eventoNome);
 
         if (grupoOpt.isPresent() && eventoOpt.isPresent()) {
             Grupo grupo = grupoOpt.get();
             Evento evento = eventoOpt.get();
-            
-            evento.setGrupoId(grupo.getId().intValue()); // Ajustado para setGrupoId compilável
+
+            evento.setGrupoId(grupo.getId().intValue());
             eventoRepository.save(evento);
-            
+
             return grupoRepository.findById(grupoId).get();
         }
+
         throw new RuntimeException("Grupo ou Evento não encontrado");
     }
-
-    @PutMapping("/{id}")
-    public Grupo atualizar(
-            @PathVariable Long id,
-            @RequestBody Grupo grupo) {
-
-        Grupo existente =
-            grupoRepository.findById(id)
-            .orElseThrow();
-
-        existente.setNome(grupo.getNome());
-
-        existente.setDescricao(
-            grupo.getDescricao()
-        );
-
-        return grupoRepository.save(
-            existente
-        );
-    }
-
-    @DeleteMapping("/{id}")
-    public void excluir(
-            @PathVariable Long id
-    ) {
-
-
-        grupoRepository.deleteById(id);
-
 }

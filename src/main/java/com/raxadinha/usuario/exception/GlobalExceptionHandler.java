@@ -41,13 +41,19 @@ public class GlobalExceptionHandler {
         return montar(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
+    // Acesso negado: tentou editar/excluir conta de outro usuário (RN03/RN04)
+    @ExceptionHandler(AcessoNegadoException.class)
+    public ResponseEntity<Map<String, Object>> acessoNegado(AcessoNegadoException e) {
+        return montar(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
     // Recurso não encontrado (UC03/UC04 E1)
     @ExceptionHandler(RecursoNaoEncontradoException.class)
     public ResponseEntity<Map<String, Object>> naoEncontrado(RecursoNaoEncontradoException e) {
         return montar(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-    // Demais regras de negócio (campos obrigatórios, senha curta etc.)
+    // Demais regras de negócio
     @ExceptionHandler(RegraNegocioException.class)
     public ResponseEntity<Map<String, Object>> regraNegocio(RegraNegocioException e) {
         return montar(HttpStatus.BAD_REQUEST, e.getMessage());

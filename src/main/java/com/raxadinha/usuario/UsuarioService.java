@@ -1,5 +1,6 @@
 package com.raxadinha.usuario;
 
+import com.raxadinha.usuario.exception.AcessoNegadoException;
 import com.raxadinha.usuario.exception.CredenciaisInvalidasException;
 import com.raxadinha.usuario.exception.EmailJaCadastradoException;
 import com.raxadinha.usuario.exception.NomeJaCadastradoException;
@@ -68,7 +69,11 @@ public class UsuarioService {
     }
 
 
-    public Usuario atualizar(Long id, Usuario dados) {
+    public Usuario atualizar(Long id, Usuario dados, Long solicitanteId) {
+        // RN03 - o usuário só pode editar os seus próprios dados
+        if (solicitanteId == null || !solicitanteId.equals(id)) {
+            throw new AcessoNegadoException("Você só pode editar a sua própria conta");
+        }
         Usuario existente = buscarPorId(id);
 
         // Normaliza entrada (remove espaços nas pontas)
@@ -114,7 +119,11 @@ public class UsuarioService {
     }
 
 
-    public void excluir(Long id) {
+    public void excluir(Long id, Long solicitanteId) {
+        // RN04 - o usuário só pode excluir a sua própria conta
+        if (solicitanteId == null || !solicitanteId.equals(id)) {
+            throw new AcessoNegadoException("Você só pode excluir a sua própria conta");
+        }
         // Exclusão lógica (soft delete): mantém o registro, apenas marca como inativo
         Usuario usuario = repository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado: " + id));
